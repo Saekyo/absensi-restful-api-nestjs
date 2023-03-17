@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(45)
+  gender     Gender
+  email      String    @unique(map: "email_UNIQUE") @db.VarChar(45)
+  phone_num  String    @db.VarChar(255)
+  media_id   String?   
+  password   String    @db.VarChar(200)
+  role       Role      @default(user)
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
+}
+
+model medias {
+  id         Int       @id @default(autoincrement())                                  
+  name       String    @db.VarChar(255)
+  path       String    @db.VarChar(255)
+  type       Media      
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
+}
+
+enum Media {
+  0
+  1
+}
+
+enum Gender {
+  Female
+  Male
+}
+
+enum Role {
+  admin
+  user
+}
