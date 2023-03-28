@@ -5,13 +5,14 @@ import { LoginDto } from './dto/login.dto';
 import { omit } from 'lodash';
 import { compare } from 'bcrypt';
 import { JwtConfig } from 'src/jwt.config';
+import { users } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private dbService: PrismaService,
-  ) {}
+  ) { }
 
   /**
    * Register Service
@@ -57,13 +58,7 @@ export class AuthService {
     if (!checkPassword) {
       throw new HttpException('Credential Incorrect', HttpStatus.UNAUTHORIZED);
     }
-    return await this.generateJwt(
-      user.id,
-      user.email,
-      user,
-      JwtConfig.user_secret,
-      JwtConfig.user_expired,
-    );
+    return await this.generateJwt(user, JwtConfig.user_secret, JwtConfig.user_expired);
   }
 
   /**
@@ -76,17 +71,16 @@ export class AuthService {
    * @returns
    */
   async generateJwt(
-    userId: any,
-    email: string,
-    user: any,
+    user: users,
     secret: any,
     expired = JwtConfig.user_expired,
   ) {
-    let accessToken = await this.jwtService.sign(
+    const { id, email, name } = user
+    const accessToken = await this.jwtService.sign(
       {
-        sub: userId,
+        sub: id,
         email,
-        name: user.first_name + ' ' + user.last_name,
+        name,
       },
       {
         expiresIn: expired,
