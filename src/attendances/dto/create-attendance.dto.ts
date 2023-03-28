@@ -9,6 +9,7 @@ export class CreateAttendanceDto implements Prisma.attendancesCreateInput {
     @ApiProperty()
     date: Date
     
+    @IsEmpty()
     @IsString()
     checkIn: string
 
@@ -28,4 +29,5 @@ export class CreateAttendanceDto implements Prisma.attendancesCreateInput {
 
 
     user: Prisma.usersCreateNestedOneWithoutAttendancesInput;
+    media?: Prisma.mediasCreateNestedOneWithoutAttendancesInput;
 }

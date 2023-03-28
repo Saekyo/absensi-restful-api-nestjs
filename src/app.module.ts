@@ -7,9 +7,11 @@ import { AnnouncementModule } from './announcement/announcement.module';
 import { JwtMiddleware } from './middleware-auth/middleware-auth.middleware';
 import { AnnouncementController } from './announcement/announcement.controller';
 import { AttendancesModule } from './attendances/attendances.module';
+import { MediaModule } from './media/media.module';
+import { MulterModule } from '@nestjs/platform-express/multer';
 
 @Module({
-  imports: [PrismaModule, AuthModule, AnnouncementModule, AttendancesModule],
+  imports: [PrismaModule, AuthModule, AnnouncementModule, AttendancesModule, MediaModule, MulterModule.register({dest: '../files'})],
   controllers: [AppController, AnnouncementController],
   providers: [AppService],
 })
