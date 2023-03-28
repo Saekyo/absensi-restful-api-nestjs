@@ -16,9 +16,8 @@ import { UpdateMenuDto } from './dto/update-menu.dto';
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
-  @Post('/create')
+  @Post('')
   @UsePipes(ValidationPipe)
-
   async create(@Body() createMenuDto: CreateMenuDto) {
     return await this.menuService.create(createMenuDto);
   }
