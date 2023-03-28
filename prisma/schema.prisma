@@ -16,30 +16,66 @@ model users {
   gender     Gender
   email      String    @unique(map: "email_UNIQUE") @db.VarChar(45)
   phone_num  String    @db.VarChar(255)
-  media_id   String?   
+  media_id   String?
   password   String    @db.VarChar(200)
   role       Role      @default(user)
   created_at DateTime? @db.DateTime(0)
   updated_at DateTime? @db.DateTime(0)
+  attendances   attendances[]
+  announcements announcements[]
 }
 
 model medias {
-  id         Int       @id @default(autoincrement())                                  
+  id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
   path       String    @db.VarChar(255)
-  type       Media      
+  type       Media
+  attendances attendances[]
   created_at DateTime? @db.DateTime(0)
   updated_at DateTime? @db.DateTime(0)
 }
 
+model announcements {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  description String    @db.VarChar(255)
+  created_at  DateTime? @db.DateTime(0)
+  updated_at  DateTime? @db.DateTime(0)
+  user        users     @relation(fields: [userId], references: [id])
+  userId      Int       
+}
+
+model attendances {
+  id          Int       @id @default(autoincrement())
+  date        DateTime  @db.Date @default(now())
+  checkIn     String    @db.VarChar(255)
+  checkOut    String?   @db.VarChar(255)
+  status      Status    
+  description String?    @db.VarChar(255)
+  user        users     @relation(fields: [userId], references: [id])
+  userId      Int
+  media       medias?    @relation(fields: [mediaId], references: [id])
+  mediaId     Int?
+  created_at  DateTime? @db.DateTime(0)
+  updated_at  DateTime? @db.DateTime(0)
+}
+
 enum Media {
-  0
-  1
+  true
+  false
 }
 
 enum Gender {
   Female
   Male
+}
+ 
+enum Status {
+  hadir  
+  wfh
+  sakit
+  izin
+  alfa
 }
 
 enum Role {
