@@ -55,7 +55,7 @@ model announcements {
 model attendances {
   id          Int       @id @default(autoincrement())
   date        DateTime  @default(now()) @db.Date
-  checkIn     String    @db.VarChar(255)
+  checkIn     String?   @db.VarChar(255)
   checkOut    String?   @db.VarChar(255)
   status      Status
   description String?   @db.VarChar(255)
@@ -63,13 +63,13 @@ model attendances {
   userId      Int
   media       medias?   @relation(fields: [mediaId], references: [id])
   mediaId     Int?
-  created_at  DateTime? @db.DateTime(0)
-  updated_at  DateTime? @db.DateTime(0)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
 }
 
 enum Media {
-  true
-  false
+  profile
+  attendances
 }
 
 enum Gender {
