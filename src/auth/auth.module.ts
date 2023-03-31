@@ -15,9 +15,6 @@ import { JwtConfig } from 'src/jwt.config';
     }),
     JwtModule.register({
       secret: JwtConfig.user_secret,
-      signOptions: {
-        expiresIn: JwtConfig.user_expired,
-      },
     }),
   ],
   providers: [AuthService, JwtStrategy],

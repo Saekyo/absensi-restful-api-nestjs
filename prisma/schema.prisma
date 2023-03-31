@@ -16,11 +16,12 @@ model users {
   gender        Gender
   email         String          @unique(map: "email_UNIQUE") @db.VarChar(45)
   phone_num     String          @db.VarChar(255)
-  media_id      String?
   password      String          @db.VarChar(200)
   role          Role            @default(user)
   created_at    DateTime?       @db.DateTime(0)
   updated_at    DateTime?       @db.DateTime(0)
+  media         medias?         @relation(fields: [mediaId], references: [id])
+  mediaId       Int?            @unique
   attendances   attendances[]
   announcements announcements[]
 }
@@ -31,6 +32,7 @@ model medias {
   path        String        @db.VarChar(255)
   type        Media
   attendances attendances[]
+  users       users[]
   created_at  DateTime?     @db.DateTime(0)
   updated_at  DateTime?     @db.DateTime(0)
 }

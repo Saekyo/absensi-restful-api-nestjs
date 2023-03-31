@@ -10,6 +10,7 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { AdminMiddleware } from './admin/admin.middleware';
 import { MediaModule } from './media/media.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
+import { RouteController } from './route/route.controller';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { MulterModule } from '@nestjs/platform-express/multer';
     MediaModule,
     MulterModule.register({ dest: '../files' }),
   ],
-  controllers: [AppController, AnnouncementController],
+  controllers: [AppController, AnnouncementController, RouteController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {

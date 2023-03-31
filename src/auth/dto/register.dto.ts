@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Gender,  Prisma } from '@prisma/client';
+import { Gender, Prisma } from '@prisma/client';
 import { IsEmpty, IsNotEmpty } from 'class-validator';
 
 export class RegisterDto implements Prisma.usersCreateInput {
@@ -21,9 +21,11 @@ export class RegisterDto implements Prisma.usersCreateInput {
 
   @ApiProperty()
   @IsEmpty()
-  media_id: string;
+  mediaId: number;
 
   @ApiProperty()
   @IsNotEmpty()
   password: string;
+
+  media?: Prisma.mediasCreateNestedOneWithoutAttendancesInput;
 }

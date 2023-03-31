@@ -41,7 +41,6 @@ export class AnnouncementController {
   @Get('/how/:userId')
   findUser(@Param('userId') id: string, @Request() req) {
     const userId = req.user.user_id;
-    console.log(userId);
     return this.announcementService.findUser(+id, +userId);
   }
 
