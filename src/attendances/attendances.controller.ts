@@ -100,6 +100,7 @@ export class AttendancesController {
         userId: user_id,
       },
     });
+    const status = attendanceData.status;
     const username = await this.dbService.users.findFirst({
       where: { id: user_id },
     });
@@ -118,11 +119,7 @@ export class AttendancesController {
       },
     });
     const pict = profile.path;
-    const announcementData = await this.dbService.announcements.findMany({
-      where: {
-        userId: user_id,
-      },
-    });
+    const announcementData = await this.dbService.announcements.findMany({});
 
     return {
       pict,

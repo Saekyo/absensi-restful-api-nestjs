@@ -11,6 +11,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { insideCircle, headingDistanceTo } from 'geolocation-utils';
 import { connect } from 'http2';
 import { Status } from './dto/enum/status.enum';
+import { status } from './status.enum';
 
 @Injectable()
 export class AttendancesService {
@@ -21,7 +22,7 @@ export class AttendancesService {
     lon1: number,
     status: Status,
   ) {
-    const radius = 1000000000; // meters
+    const radius = 100; // meters
     const location1 = { lat: lat1, lon: lon1 };
     const lat2 = -6.6251028;
     const lon2 = 106.8122365;
@@ -49,11 +50,13 @@ export class AttendancesService {
         }
       } else {
         return {
+          stasusCode: 400,
           message: 'You Cant Access This On Your Location Right Now!',
         };
       }
     } else {
       return {
+        statusCode: 450,
         message: 'You are not absent, please fill in correctly',
       };
     }
@@ -157,6 +160,7 @@ export class AttendancesService {
 
     return media;
   }
+
   async now() {
     const date = new Date();
     const now = date.toLocaleString();
@@ -172,6 +176,7 @@ export class AttendancesService {
     // Jika selisih waktu kurang dari nol, artinya batas akhir absen sudah berlalu
     if (timeDiff < 0) {
       return {
+        statusCode: 400,
         message: "You're Already Late",
         now,
       };
@@ -180,11 +185,13 @@ export class AttendancesService {
       const hours = Math.floor(timeDiff / (1000 * 60 * 60)); // mengonversi selisih waktu menjadi jam
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // mengonversi selisih waktu menjadi menit
       return {
+        statusCode: 200,
         checkInHours: `${hours}.${minutes} Hrs`,
         now,
       };
     }
   }
+
   async findUser(userId: number, id: number) {
     const { name } = await this.dbService.users.findFirst({
       where: { id },
@@ -193,9 +200,10 @@ export class AttendancesService {
     //   where: { id }
     //   userData :
     // })
-    let findOneUser = await this.dbService.attendances.findMany({
+    const findOneUser = await this.dbService.attendances.findMany({
       where: { userId },
     });
+
     return {
       statusCode: 200,
       message: 'success',
