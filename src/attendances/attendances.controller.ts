@@ -93,18 +93,18 @@ export class AttendancesController {
   }
 
   @Get('/home')
-  async home(@Request() req, id: number) {
+  async home(@Param('status') status: string, @Request() req, id: number) {
     const { id: user_id } = req.user;
     const attendanceData = await this.dbService.attendances.findFirst({
       where: {
         userId: user_id,
       },
     });
-    const status = attendanceData.status;
     const username = await this.dbService.users.findFirst({
       where: { id: user_id },
     });
     const name = username.name;
+
     // return console.log(attendanceData);
 
     // const profile = await this.dbService.attendances.findFirst({
@@ -118,9 +118,10 @@ export class AttendancesController {
         id,
       },
     });
-    const pict = profile.path;
-    const announcementData = await this.dbService.announcements.findMany({});
 
+    const announcementData = await this.dbService.announcements.findMany({});
+    const annoucementProfile = announcementData;
+    const pict = profile.path;
     return {
       pict,
       name,
@@ -188,6 +189,7 @@ export class AttendancesController {
   @Get('/admin/data/:userId')
   findUser(@Param('userId') id: string, @Request() req) {
     const userId = req.user.user_id;
+    //get data sakit
     return this.attendancesService.findUser(+id, +userId);
   }
 }

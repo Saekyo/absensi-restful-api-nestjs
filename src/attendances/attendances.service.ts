@@ -203,6 +203,29 @@ export class AttendancesService {
     const findOneUser = await this.dbService.attendances.findMany({
       where: { userId },
     });
+    const statusHadir = findOneUser.filter(
+      (item) => item.status == 'hadir',
+    ).length;
+    const statusAlfa = findOneUser.filter(
+      (item) => item.status == 'alfa',
+    ).length;
+    const statusIzin = findOneUser.filter(
+      (item) => item.status == 'izin',
+    ).length;
+    const statusWfh = findOneUser.filter((item) => item.status == 'wfh').length;
+    const statusSakit = findOneUser.filter(
+      (item) => item.status == 'sakit',
+    ).length;
+
+    const totalAttendances =
+      statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+
+    const hadir = (statusHadir / totalAttendances) * 100;
+    const wfh = (statusAlfa / totalAttendances) * 100;
+    const alfa = (statusHadir / totalAttendances) * 100;
+    const sakit = (statusSakit / totalAttendances) * 100;
+    const izin = (statusIzin / totalAttendances) * 100;
+    // console.log(findOneUser.reduce((a, b) => a + b['Status']));
 
     return {
       statusCode: 200,
