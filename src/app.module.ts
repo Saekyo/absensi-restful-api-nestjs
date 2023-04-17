@@ -19,6 +19,7 @@ import { RouteController } from './route/route.controller';
     AnnouncementModule,
     AttendancesModule,
     MediaModule,
+
     MulterModule.register({ dest: '../files' }),
   ],
   controllers: [AppController, AnnouncementController, RouteController],
