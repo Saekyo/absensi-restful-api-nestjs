@@ -5,6 +5,7 @@ import {
   HttpCode,
   Post,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth/jwt-auth.guard';
 import { TransformPasswordPipe } from './transform.password.pipe';
+import { TimeoutInterceptor } from 'src/set-time-out/set-time-out.interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -42,6 +44,7 @@ export class AuthController {
    * @returns
    */
   @HttpCode(200)
+  @UseInterceptors(TimeoutInterceptor)
   @Post('login')
   async login(@Body() dto: LoginDto) {
     return await this.authService.login(dto);
