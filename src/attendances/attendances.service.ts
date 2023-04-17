@@ -3,10 +3,12 @@ import {
   HttpException,
   HttpStatus,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Prisma } from '@prisma/client';
+import { Request } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { insideCircle, headingDistanceTo } from 'geolocation-utils';
 import { connect } from 'http2';
@@ -131,6 +133,39 @@ export class AttendancesService {
     return `This action updates a #${id} attendance`;
   }
 
+  async percentages(@Param() Param, userId: number) {
+    const findOneUser = await this.dbService.attendances.findMany({
+      where: { userId },
+    });
+    const statusHadir = findOneUser.filter(
+      (item) => item.status == 'hadir',
+    ).length;
+    const statusAlfa = findOneUser.filter(
+      (item) => item.status == 'alfa',
+    ).length;
+    const statusIzin = findOneUser.filter(
+      (item) => item.status == 'izin',
+    ).length;
+    const statusWfh = findOneUser.filter((item) => item.status == 'wfh').length;
+    const statusSakit = findOneUser.filter(
+      (item) => item.status == 'sakit',
+    ).length;
+
+    const totalAttendances =
+      statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+
+    const hadir = (statusHadir / totalAttendances) * 100;
+    const wfh = (statusAlfa / totalAttendances) * 100;
+    const alfa = (statusHadir / totalAttendances) * 100;
+    const sakit = (statusSakit / totalAttendances) * 100;
+    const izin = (statusIzin / totalAttendances) * 100;
+
+    // if (Param.status == 'hadir') {
+    //   return hadir;
+    // }
+    return hadir;
+  }
+
   async profile(
     @UploadedFile() photo: Express.Multer.File,
     name: string,
@@ -203,28 +238,7 @@ export class AttendancesService {
     const findOneUser = await this.dbService.attendances.findMany({
       where: { userId },
     });
-    const statusHadir = findOneUser.filter(
-      (item) => item.status == 'hadir',
-    ).length;
-    const statusAlfa = findOneUser.filter(
-      (item) => item.status == 'alfa',
-    ).length;
-    const statusIzin = findOneUser.filter(
-      (item) => item.status == 'izin',
-    ).length;
-    const statusWfh = findOneUser.filter((item) => item.status == 'wfh').length;
-    const statusSakit = findOneUser.filter(
-      (item) => item.status == 'sakit',
-    ).length;
 
-    const totalAttendances =
-      statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
-
-    const hadir = (statusHadir / totalAttendances) * 100;
-    const wfh = (statusAlfa / totalAttendances) * 100;
-    const alfa = (statusHadir / totalAttendances) * 100;
-    const sakit = (statusSakit / totalAttendances) * 100;
-    const izin = (statusIzin / totalAttendances) * 100;
     // console.log(findOneUser.reduce((a, b) => a + b['Status']));
 
     return {

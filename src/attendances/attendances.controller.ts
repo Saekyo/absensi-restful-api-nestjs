@@ -27,6 +27,8 @@ import { insideCircle, headingDistanceTo } from 'geolocation-utils';
 import { Multer } from 'multer';
 import { users } from '@prisma/client';
 import { use } from 'passport';
+import { stat } from 'fs';
+import { status } from './status.enum';
 @UseInterceptors(
   FileInterceptor('file', {
     storage: diskStorage({
@@ -92,7 +94,13 @@ export class AttendancesController {
     return this.attendancesService.checkout(+id);
   }
 
-  @Get('/home')
+  // @Get('/home/status/:status')
+  // async status(@Param('status') status: status) {
+
+  //   const percent =  this.attendancesService.percentages();
+  //   const hadir = percent.
+  // }
+  @Get('/home/data')
   async home(@Param('status') status: string, @Request() req, id: number) {
     const { id: user_id } = req.user;
     const attendanceData = await this.dbService.attendances.findFirst({
@@ -100,33 +108,38 @@ export class AttendancesController {
         userId: user_id,
       },
     });
-    const username = await this.dbService.users.findFirst({
-      where: { id: user_id },
-    });
-    const name = username.name;
 
-    // return console.log(attendanceData);
+    return {
+      attendance: attendanceData,
+    };
+  }
 
-    // const profile = await this.dbService.attendances.findFirst({
-    //   where: {},
-    // });
-    // const username = await this.dbService.users.findFirst({
-    //   where: { id: userId },
-    // });
+  @Get('/home/announcement/profile')
+  async picture(@Request() req, id: number) {
     const profile = await this.dbService.medias.findFirst({
       where: {
         id,
       },
     });
 
-    const announcementData = await this.dbService.announcements.findMany({});
-    const annoucementProfile = announcementData;
     const pict = profile.path;
     return {
-      pict,
-      name,
-      attendance: attendanceData,
-      announcement: announcementData,
+      path: pict,
+    };
+  }
+  @Get('/home/name')
+  async name(@Request() req, id: number) {
+    const { id: user_id } = req.user;
+    const username = await this.dbService.users.findFirst({
+      where: { id: user_id },
+    });
+    const name = username.name;
+  }
+  @Get('/home/announcement')
+  async announcement() {
+    const announcementData = await this.dbService.announcements.findMany({});
+    return {
+      announcementData,
     };
   }
   @Get('/checkIn')
