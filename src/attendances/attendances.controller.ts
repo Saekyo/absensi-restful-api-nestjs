@@ -127,15 +127,8 @@ export class AttendancesController {
       path: pict,
     };
   }
-  @Get('/home/name')
-  async name(@Request() req, id: number) {
-    const { id: user_id } = req.user;
-    const username = await this.dbService.users.findFirst({
-      where: { id: user_id },
-    });
-    const name = username.name;
-  }
-  @Get('/home/announcement')
+
+  @Get('/announcement')
   async announcement() {
     const announcementData = await this.dbService.announcements.findMany({});
     return {

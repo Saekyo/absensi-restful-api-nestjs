@@ -28,8 +28,12 @@ export class AttendancesService {
     const location1 = { lat: lat1, lon: lon1 };
     const lat2 = -6.6251028;
     const lon2 = 106.8122365;
+    const lat3 = -6.627028;
+    const lon3 = 106.814333;
     const location2 = { lat: lat2, lon: lon2 };
+    const location3 = { lat: lat3, lon: lon3 };
     let circle = insideCircle(location2, location1, radius); // true
+    let circle2 = insideCircle(location3, location1, radius);
 
     const now = new Date();
     console.log(circle);
@@ -47,7 +51,23 @@ export class AttendancesService {
           return {
             location: circle,
             statusCode: 200,
-            message: 'Success isi 2',
+            message: 'Successfully Checkin',
+          };
+        }
+      } else if (circle2 == true) {
+        const attendance = await this.dbService.attendances.create({
+          data: {
+            checkIn: now.toLocaleString(),
+            status: status,
+            user: { connect: { id: userId } },
+          },
+          // data: { ...dto, user: { connect: { id: userId } } }
+        });
+        if (attendance) {
+          return {
+            location: circle2,
+            statusCode: 200,
+            message: 'Successfully Checkin',
           };
         }
       } else {
@@ -163,7 +183,6 @@ export class AttendancesService {
     // if (Param.status == 'hadir') {
     //   return hadir;
     // }
-    return hadir;
   }
 
   async profile(
