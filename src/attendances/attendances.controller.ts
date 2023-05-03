@@ -9,7 +9,7 @@ import {
   Request,
   Req,
   UseGuards,
-  UseInterceptors,
+    UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
 import { AttendancesService } from './attendances.service';
@@ -92,6 +92,8 @@ export class AttendancesController {
     return this.attendancesService.checkout(+id);
   }
 
+
+
   @Get('/home')
   async home(@Request() req, id: number) {
     const { id: user_id } = req.user;
@@ -144,6 +146,7 @@ export class AttendancesController {
       time,
       name,
     };
+    
   }
 
   @Get('/profile')
@@ -193,4 +196,121 @@ export class AttendancesController {
     const userId = req.user.user_id;
     return this.attendancesService.findUser(+id, +userId);
   }
+  @Get('/precentage')
+  async precentage(@Param('status') status: string ,@Request() request, userId: number){
+    const findOneUser = await this.dbService.attendances.findMany({
+      where: { userId },
+    });
+    const statusHadir = findOneUser.filter(
+      (item) => item.status == 'hadir',
+    ).length;
+    const statusAlfa = findOneUser.filter(
+      (item) => item.status == 'alfa',
+    ).length;
+    const statusIzin = findOneUser.filter(
+      (item) => item.status == 'izin',
+    ).length;
+    const statusWfh = findOneUser.filter((item) => item.status == 'wfh').length;
+    const statusSakit = findOneUser.filter(
+      (item) => item.status == 'sakit',
+    ).length;
+
+  let totalAttendance = 0;
+  let percentages = 0;
+
+  switch(status) {
+    case 'hadir':
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = (statusHadir / totalAttendance) * 100;
+      break;
+    case 'alfa':
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = (statusAlfa / totalAttendance) * 100;
+      break;
+    case 'izin':
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = (statusIzin / totalAttendance) * 100;
+      break;
+    case 'wfh':
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = (statusWfh / totalAttendance) * 100;
+      break;
+    case 'sakit':
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = (statusSakit / totalAttendance) * 100;
+      
+      break;
+    default:
+      totalAttendance = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentages = 0;
+  }
+
+  console.log(`Percentages ${status}: ${percentages}%`);
+
+    const totalAttendances =
+      statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      const percentage = {
+        hadir: (statusHadir / totalAttendances) * 100,
+        alfa: (statusAlfa / totalAttendances) * 100,
+        izin: (statusIzin / totalAttendances) * 100,
+        wfh: (statusWfh / totalAttendances) * 100,
+        sakit: (statusSakit / totalAttendances) * 100,
+      };
+    
+      return { percentage };
+    // console.log(findOneUser.reduce((a, b) => a + b['Status']));
+  }
+  @Get('/precentage/status/:status')
+async precentages(@Param('status') status: string) {
+  const findAllUsers = await this.dbService.attendances.findMany();
+
+  const statusHadir = findAllUsers.filter((item) => item.status === 'hadir').length;
+  const statusAlfa = findAllUsers.filter((item) => item.status === 'alfa').length;
+  const statusIzin = findAllUsers.filter((item) => item.status === 'izin').length;
+  const statusWfh = findAllUsers.filter((item) => item.status === 'wfh').length;
+  const statusSakit = findAllUsers.filter((item) => item.status === 'sakit').length;
+
+  let totalAttendances = 0;
+  let percentage = 0;
+  let rounded
+
+  switch (status) {
+    case 'hadir':
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = (statusHadir / totalAttendances) * 100;
+      rounded = Math.floor(percentage)
+
+      break;
+    case 'alfa':
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = (statusAlfa / totalAttendances) * 100;
+      rounded = Math.floor(percentage)
+
+      break;
+    case 'izin':
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = (statusIzin / totalAttendances) * 100;
+      rounded = Math.floor(percentage)
+
+      break;
+    case 'wfh':
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = (statusWfh / totalAttendances) * 100;
+      rounded = Math.floor(percentage)
+
+      break;
+    case 'sakit':
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = (statusSakit / totalAttendances) * 100;
+      rounded = Math.floor(percentage)
+      break;
+    default:
+      totalAttendances = statusHadir + statusAlfa + statusWfh + statusSakit + statusIzin;
+      percentage = 0;
+  }
+
+  return{
+    message: `Percentage ${status}: ${rounded}%`
+  }
+}
 }

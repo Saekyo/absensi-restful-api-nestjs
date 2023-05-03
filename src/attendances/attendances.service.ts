@@ -21,7 +21,7 @@ export class AttendancesService {
     lon1: number,
     status: Status,
   ) {
-    const radius = 1000000000; // meters
+    const radius = 100; // meters
     const location1 = { lat: lat1, lon: lon1 };
     const lat2 = -6.6251028;
     const lon2 = 106.8122365;
@@ -196,6 +196,7 @@ export class AttendancesService {
     let findOneUser = await this.dbService.attendances.findMany({
       where: { userId },
     });
+    
     return {
       statusCode: 200,
       message: 'success',
