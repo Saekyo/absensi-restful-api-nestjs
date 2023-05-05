@@ -1,13 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, UseGuards, Request,  NestMiddleware, Injectable, UseInterceptors } from '@nestjs/common';
 import { AnnouncementService } from './announcement.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth/jwt-auth.guard';
 import jwt from 'jsonwebtoken'
 import { JwtConfig } from 'src/jwt.config';
+import { JwtMiddleware } from 'src/middleware-auth/middleware-auth.middleware';
+import { MiddlewareRole } from 'src/middleware-auth/middleware-role/middleware-role.middleware';
 
 @UseGuards(JwtAuthGuard)
 @Controller('announcement')
+
 export class AnnouncementController {
   constructor(private readonly announcementService: AnnouncementService) { }
 
@@ -27,7 +30,7 @@ export class AnnouncementController {
     return this.announcementService.findOne(+id);
   }
   
-  @Get('/how/:userId')
+  @Get('/show/:userId')
   findUser(@Param('userId') id: string, @Request() req) {
     const userId = req.user.user_id
     console.log(userId)
@@ -39,7 +42,7 @@ export class AnnouncementController {
     return this.announcementService.update(+id, updateAnnouncementDto);
   }
 
-  @Delete(':id')
+  @Delete('/delete/:id')
   delete(@Param('id') id: string) {
     return this.announcementService.delete(+id);
   }

@@ -14,16 +14,17 @@ export class AttendancesService {
   constructor(
     private dbService: PrismaService,
   ) { }
-  async createPresent(lat1: number, lon1: number, userId: number,  status: Status) {
-    const radius = 100000 // meters
+  async createPresent(userId: number, lat1: number, lon1: number, status: Status) {
+    const radius = 100 // meters
     const location1 = { lat: lat1, lon: lon1 }
     const lat2 = -6.6251028
     const lon2 = 106.8122365
     const location2 = { lat: lat2, lon: lon2 }
     let circle = insideCircle(location2, location1, radius) // true
-
+    let res = headingDistanceTo(location2, location2)
+    // console.log(location2, location1, res)
     const now = new Date();
-    console.log(circle)
+    // console.log(circle)
     if (status == 'hadir') {
       if (circle == true) {
         const attendance = await this.dbService.attendances.create({
@@ -99,8 +100,21 @@ export class AttendancesService {
 
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} attendance`;
+  async findAll() {
+    const all = await this.dbService.attendances.findMany({
+      include:{
+        user: {
+          select:{
+            name: true
+          }
+        }
+      }
+    })
+
+    return{
+      status: 200,
+      data :  all ?? []
+    }
   }
 
   async checkout(id: number) {
@@ -123,4 +137,5 @@ export class AttendancesService {
   remove(id: number) {
     return `This action removes a #${id} attendance`;
   }
+  
 }
