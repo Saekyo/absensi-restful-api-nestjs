@@ -11,28 +11,37 @@ datasource db {
 }
 
 model users {
-  id         Int       @id @default(autoincrement())
-  name       String    @db.VarChar(45)
-  gender     Gender
-  email      String    @unique(map: "email_UNIQUE") @db.VarChar(45)
-  phone_num  String    @db.VarChar(255)
-  media_id   String?
-  password   String    @db.VarChar(200)
-  role       Role      @default(user)
-  created_at DateTime? @db.DateTime(0)
-  updated_at DateTime? @db.DateTime(0)
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(45)
+  gender        Gender
+  email         String          @unique(map: "email_UNIQUE") @db.VarChar(45)
+  phone_num     String          @db.VarChar(255)
+  password      String          @db.VarChar(200)
+  role          Role            @default(user)
+  created_at    DateTime?       @db.DateTime(0)
+  updated_at    DateTime?       @db.DateTime(0)
+  media         medias?         @relation(fields: [mediaId], references: [id])
+  mediaId       Int?            @unique
   attendances   attendances[]
   announcements announcements[]
 }
 
 model medias {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  path        String        @db.VarChar(255)
+  type        Media
+  attendances attendances[]
+  users       users[]
+  created_at  DateTime?     @db.DateTime(0)
+  updated_at  DateTime?     @db.DateTime(0)
+}
+
+model menus {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
-  path       String    @db.VarChar(255)
-  type       Media
-  attendances attendances[]
-  created_at DateTime? @db.DateTime(0)@default(now())
-  updated_at DateTime? @db.DateTime(0)@default(now())
+  created_at DateTime? @db.DateTime(0)
+  updated_at DateTime? @db.DateTime(0)
 }
 
 model announcements {
@@ -42,22 +51,22 @@ model announcements {
   created_at  DateTime? @db.DateTime(0)
   updated_at  DateTime? @db.DateTime(0)
   user        users     @relation(fields: [userId], references: [id])
-  userId      Int       
+  userId      Int
 }
 
 model attendances {
   id          Int       @id @default(autoincrement())
-  date        DateTime  @db.Date @default(now())
+  date        DateTime  @default(now()) @db.Date
   checkIn     String?   @db.VarChar(255)
   checkOut    String?   @db.VarChar(255)
-  status      Status    
-  description String?    @db.VarChar(255)
-  user        users      @relation(fields: [userId], references: [id])
+  status      Status
+  description String?   @db.VarChar(255)
+  user        users     @relation(fields: [userId], references: [id])
   userId      Int
-  media       medias?    @relation(fields: [mediaId], references: [id])
+  media       medias?   @relation(fields: [mediaId], references: [id])
   mediaId     Int?
-  created_at  DateTime? @db.DateTime(0)@default(now())
-  updated_at  DateTime? @db.DateTime(0)@default(now())
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @db.DateTime(0)
 }
 
 enum Media {
@@ -69,9 +78,9 @@ enum Gender {
   Female
   Male
 }
- 
+
 enum Status {
-  hadir  
+  hadir
   wfh
   sakit
   izin

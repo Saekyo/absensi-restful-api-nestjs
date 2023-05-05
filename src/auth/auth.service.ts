@@ -12,7 +12,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private dbService: PrismaService,
-  ) { }
+  ) {}
 
   /**
    * Register Service
@@ -58,7 +58,7 @@ export class AuthService {
     if (!checkPassword) {
       throw new HttpException('Credential Incorrect', HttpStatus.UNAUTHORIZED);
     }
-    return await this.generateJwt(user, JwtConfig.user_secret, JwtConfig.user_expired);
+    return await this.generateJwt(user, JwtConfig.user_secret);
   }
 
   /**
@@ -70,20 +70,16 @@ export class AuthService {
    * @param expired
    * @returns
    */
-  async generateJwt(
-    user: users,
-    secret: any,
-    expired = JwtConfig.user_expired,
-  ) {
-    const { id, email, name } = user
+  async generateJwt(user: users, secret: any) {
+    const { id, email, name, role } = user;
     const accessToken = await this.jwtService.sign(
       {
         sub: id,
         email,
         name,
+        role,
       },
       {
-        expiresIn: expired,
         secret,
       },
     );

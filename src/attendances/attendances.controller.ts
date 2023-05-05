@@ -3,13 +3,14 @@ import { AttendancesService } from './attendances.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth/jwt-auth.guard';
-import { Status } from "./dto/enum/status.enum"
+import { Status } from './dto/enum/status.enum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { request } from 'http';
 import { insideCircle, headingDistanceTo } from 'geolocation-utils'
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Multer } from 'multer';
 import { use } from 'passport';
 import * as _ from 'lodash';
 import { count, log } from 'console';
@@ -44,20 +45,14 @@ export class AttendancesController {
     // const { id: mediaId }  =  await this.dbService.medias.findFirst({ where: {path: medias.path } })
     return this.attendancesService.createOthers(userId, photo, status, description, name)
   }
-
-
   @Post('/upload/profile')
-  async uploadProfile(@UploadedFile() photo: Express.Multer.File, @Body('name') name: string) {
-    const url = `/image/${photo.originalname}`
-
-    const media = await this.dbService.medias.create({
-      data: {
-        path: url,
-        name: name,
-        type: 'profile'
-      }
-    })
-    return media
+  async uploadProfile(
+    @UploadedFile() photo: Express.Multer.File,
+    @Body('name') name: string,
+    @Request() req,
+  ) {
+    const { user_id } = req.user;
+    return this.attendancesService.profile(photo, name, user_id);
   }
 
   @Get('/show')
@@ -376,71 +371,11 @@ export class AttendancesController {
     
       return { name, persen };
     });
-
-      
-
-    return result
-
-    
-    
-
-
-    //   const groupedAttendance = _.groupBy(attendanceArray, 'name', count);
-
-    //   return console.log(groupedAttendance)
-    // // console.log(groupedAttendanceArray);
-    // //   return console.log(attendanceArray);
-
-
-
-    // const attendanceByUserId = await this.dbService.attendances.groupBy({
-    //   by: ['userId', 'status'],
-    //   _count: true, // Menggunakan "count" daripada "_count"
-    //   orderBy: {
-    //     userId: 'asc',
-    //   },
-    // });
-    // console.log(attendanceByUserId)
-    // const userMap = await this.dbService.users.findMany()
-
-    // const attendancePercentageByUserId = attendanceByUserId.reduce((result, attendances) => {
-    //   console.log(result)
-
-    //   const { userId, status, _count } = attendances; // Menggunakan "_count" dan "user" daripada "__count" dan "user"
-    //   const index = result.findIndex(item => item.userId === userId);
-
-    //   if (index > -1) {
-    //     result[index].percentage[status] = `${Math.floor((_count / result[index].total) * 100).toFixed(2)}%`;
-    //   } else {
-    //     result.push({
-    //       userId,
-    //       total: _count,
-    //       percentage: { [status]: `${Math.floor((_count / _count) * 100).toFixed(2)}%` }
-    //     });
-    //   }
-
-    //   return result;
-    // }, []);
-
-    // attendancePercentageByUserId.forEach(async attendances => {
-    //   let totalPercentage = 0;
-    //   Object.entries(attendances.percentage).forEach(([status, percentage]) => {
-    //     totalPercentage += parseFloat(percentage as string);
-    //   });
-
-    //   // Mengecek apakah total persentase sama dengan 100%
-    //   if (totalPercentage !== 100) {
-    //     Object.entries(attendances.percentage).forEach(([status, percentage]) => {
-    //       attendances.percentage[status] = `${((parseFloat(percentage as string) / totalPercentage) * 100).toFixed(2)}%`;
-    //     });
-    //   }
-    // });
-
-    // return {
-    //   attendancePercentageByUserId
-    // };
+    return result    
   }
 
 }
+
+
 
 

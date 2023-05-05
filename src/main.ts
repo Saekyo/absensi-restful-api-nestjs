@@ -15,7 +15,7 @@ async function bootstrap() {
   SwaggerModule.setup('openapi', app, document);
 
   const cors = {
-    origin: ['http://localhost:3000', 'http://localhost', '*'],
+    origin: ['*'],
     methods: 'GET, HEAD, PUT, PATCH, POST, DELETE, OPTIONS',
     preflightContinue: false,
     optionsSuccessStatus: 204,
