@@ -36,7 +36,6 @@ export class AttendancesService {
     let circle2 = insideCircle(location3, location1, radius);
 
     const now = new Date();
-    console.log(circle);
     if (status == 'hadir') {
       if (circle == true) {
         const attendance = await this.dbService.attendances.create({
@@ -150,6 +149,17 @@ export class AttendancesService {
   }
 
   async checkout(id: number) {
+    // Check if record exists
+    const attendance = await this.dbService.attendances.findUnique({
+      where: { id },
+    });
+    if (!attendance) {
+      return {
+        statusCode: 404,
+        message: 'Attendance record not found',
+      };
+    }
+  
     const now = new Date();
     const checkout = await this.dbService.attendances.update({
       where: { id },
@@ -165,6 +175,8 @@ export class AttendancesService {
     }
     return `This action updates a #${id} attendance`;
   }
+  
+
 
   async percentages(@Param() Param, userId: number) {
     const findOneUser = await this.dbService.attendances.findMany({

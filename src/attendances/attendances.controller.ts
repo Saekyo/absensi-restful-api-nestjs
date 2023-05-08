@@ -60,6 +60,12 @@ export class AttendancesController {
     return this.attendancesService.findAll()
   }
 
+  @Patch('/checkout/:id')
+  async checkout(@Param('id') id: string){
+    return this.attendancesService.checkout(+id);
+
+  }
+
   @Get('/percentage/:userId')
   async percentageUser(@Request() request, @Param('userId', ParseIntPipe) userId: number, status) {
     const findOneUser = await this.dbService.attendances.findMany({
