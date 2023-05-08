@@ -10,18 +10,14 @@ import { AttendancesModule } from './attendances/attendances.module';
 import { AdminMiddleware } from './admin/admin.middleware';
 import { MediaModule } from './media/media.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
-import { RouteController } from './route/route.controller';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AbsenCron  } from './auto-absen/auto-absen.cron';
+import { AutoModule } from './auto-absen/auto-absen.module';
+
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    AnnouncementModule,
-    AttendancesModule,
-    MediaModule,
-    MulterModule.register({ dest: '../files' }),
-  ],
-  controllers: [AppController, AnnouncementController, RouteController],
+  imports: [PrismaModule, AuthModule, AnnouncementModule, AttendancesModule, MediaModule, MulterModule.register({dest: '../files'}), ScheduleModule.forRoot(), AutoModule],
+  controllers: [AppController, AnnouncementController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
@@ -39,3 +35,4 @@ export class AppModule implements NestModule {
     consumer.apply(JwtMiddleware).exclude('auth/login');
   }
 }
+

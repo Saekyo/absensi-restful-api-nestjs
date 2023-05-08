@@ -29,7 +29,10 @@ const user = await this.prisma.users.findUnique({
 });
 
 if (user.role !== 'admin' && user.role !== 'user') {
-  throw new HttpException('Forbidden.', HttpStatus.FORBIDDEN);
+  return {
+    status: 403,
+    message: "forbidden"
+  }
 }
 
 if (user.role === 'admin' && req.baseUrl.includes('/user')) {
